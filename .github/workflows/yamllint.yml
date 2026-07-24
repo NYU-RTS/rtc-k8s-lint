@@ -1,0 +1,24 @@
+name: lint-yaml
+
+on:
+  pull_request:
+    branches:
+      - main
+
+ 
+permissions:
+  contents: read
+  pull-requests: write 
+
+
+jobs:
+  yamllint:
+    name: runner / yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@7
+      - name: yamllint
+        uses: reviewdog/action-yamllint@e02a49fdf53f51ddd8dfa89b09aa975043aeba38 #v1.23.0
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review # Change reporter.
