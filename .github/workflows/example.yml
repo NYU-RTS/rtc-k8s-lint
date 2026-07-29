@@ -1,6 +1,9 @@
 name: Example Workflow
 
 on:
+  push:
+    branches:
+    - main
   workflow_dispatch:
 
 permissions:
@@ -15,10 +18,10 @@ jobs:
     steps:
       - name: Run the Container Action
         id: run
-        uses: actions/container-prebuilt-action@v0.2.0
+        uses: NYU-RTS/rtc-k8s-lint@0.3.0
         with:
-          who-to-greet: Mona Lisa Octocat
+          location: "/github/workspace/example"
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.run.outputs.greeting }}"
+        run: echo "${{ steps.run.outputs.manifest }}"

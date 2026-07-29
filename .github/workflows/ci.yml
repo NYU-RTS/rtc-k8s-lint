@@ -48,8 +48,12 @@ jobs:
 
       - name: Run the Container
         id: run
+        env:
+          INPUT_LOCATION: "/src/example"
+          GITHUB_OUTPUT: "/tmp/output"
         run: |
           docker run \
-            --rm ${{ env.TEST_TAG }} \
-            -v ${{ github.workspace }}:/src
-            build src/example/
+            -v ${{ github.workspace }}:/src:rw \
+            --env INPUT_LOCATION="${{ env.INPUT_LOCATION }}" \
+            --env GITHUB_OUTPUT="${{ env.GITHUB_OUTPUT }}" \
+            --rm ${{ env.TEST_TAG }}
