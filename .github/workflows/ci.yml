@@ -50,5 +50,5 @@ jobs:
         id: run
         run: |
           docker run \
-            build example/ \
-            --rm ${{ env.TEST_TAG }}
+            --rm ${{ env.TEST_TAG }} \
+            build example/
