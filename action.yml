@@ -4,19 +4,19 @@ author: Your name or organization here
 
 # Define your inputs here.
 inputs:
-  who-to-greet:
+  location:
     description: Your input description here
     required: true
-    default: World
+    default: .
 
 # Define your outputs here.
 outputs:
-  greeting:
+  manifest:
     description: Your output description here
 
 # Update the image repository and tag below.
 runs:
   using: docker
-  image: docker://ghcr.io/actions/container-prebuilt-action:v0.2.0
+  image: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.3.0
   env:
-    INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
+    INPUT_LOCATION: ${{ inputs.location }}

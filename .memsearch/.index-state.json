@@ -1,0 +1,18 @@
+{
+  "collection": "ms_rtc_k8s_lint_ddc14d61",
+  "failed_files": [],
+  "indexed_chunks": 1,
+  "indexed_files": 1,
+  "last_completed_at": "2026-07-29T21:08:25.060838Z",
+  "last_started_at": "2026-07-29T21:08:23.899938Z",
+  "last_success_at": "2026-07-29T21:08:25.060838Z",
+  "milvus_uri": "~/.memsearch/milvus.db",
+  "operation": "index",
+  "paths": [
+    "/Users/ss19980/Documents/packages/rtc-k8s-lint/.memsearch/memory"
+  ],
+  "schema_version": 1,
+  "status": "ok",
+  "total_files": 1,
+  "updated_at": "2026-07-29T21:08:25.060838Z"
+}
