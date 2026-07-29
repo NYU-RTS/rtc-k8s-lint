@@ -51,4 +51,5 @@ jobs:
         run: |
           docker run \
             --rm ${{ env.TEST_TAG }} \
-            build example/
+            -v ${{ github.workspace }}:/src
+            build src/example/
