@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-tags: true
           ref: main
@@ -59,7 +59,7 @@ jobs:
       # - `v1`
       - name: Set Image Tags
         id: tags
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const version = '${{ steps.version.outputs.version }}'
@@ -82,7 +82,7 @@ jobs:
       # Get metadata to apply to image
       - name: Extract Metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.CONTAINER_REGISTRY }}/${{ github.repository }}
           tags: ${{ steps.tags.outputs.tags }}
@@ -90,7 +90,7 @@ jobs:
       # Authenticate to the container registry
       - name: Authenticate to Container Registry
         id: login
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ env.CONTAINER_REGISTRY_USERNAME }}
@@ -99,7 +99,7 @@ jobs:
       # Publish the container image
       - name: Publish Container Image
         id: publish
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         env:
           LABELS: ${{ steps.meta.outputs.labels }}
           TAGS: ${{ steps.meta.outputs.tags }}
