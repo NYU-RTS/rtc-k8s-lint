@@ -1,10 +1,18 @@
 import argparse
 import json
 import os
+import sys
+import urllib.error
 import urllib.request
 
-COMMENT_MARKER = "<!-- rtc-k8s-lint -->"
 API_ROOT = "https://api.github.com"
+
+
+def comment_marker(manifest):
+    # Keyed by manifest path so a repo validating multiple locations (e.g.
+    # cicd/dev and cicd/prod) gets one persistent comment per location
+    # instead of each run deleting/overwriting the others'.
+    return f"<!-- rtc-k8s-lint:{manifest} -->"
 
 
 def github_request(method, path, token, payload=None):
@@ -23,8 +31,19 @@ def github_request(method, path, token, payload=None):
         headers=headers,
         method=method,
     )
-    with urllib.request.urlopen(request) as response:
-        return response.read().decode("utf-8")
+    try:
+        with urllib.request.urlopen(request) as response:
+            return response.read().decode("utf-8")
+    except urllib.error.HTTPError as error:
+        if error.code == 403:
+            print(
+                "::error::GitHub API returned 403 Forbidden. This workflow "
+                "needs `permissions: pull-requests: write` to post the "
+                "validation comment; see README.md.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        raise
 
 
 def load_comments(repo, pr_number, token):
@@ -32,10 +51,11 @@ def load_comments(repo, pr_number, token):
     return json.loads(response)
 
 
-def delete_existing_comment(repo, pr_number, token):
+def delete_existing_comment(repo, pr_number, token, manifest):
+    marker = comment_marker(manifest)
     for comment in load_comments(repo, pr_number, token):
         body = comment.get("body") or ""
-        if comment["user"]["login"] == "github-actions[bot]" and COMMENT_MARKER in body:
+        if comment["user"]["login"] == "github-actions[bot]" and marker in body:
             github_request(
                 "DELETE",
                 f"repos/{repo}/issues/comments/{comment['id']}",
@@ -63,7 +83,7 @@ def build_comment_body(report, manifest):
         return None
 
     lines = [
-        COMMENT_MARKER,
+        comment_marker(manifest),
         f"## Flux schema validation failed for `{manifest}`",
         "",
     ]
@@ -112,6 +132,6 @@ if __name__ == "__main__":
     token = os.environ["GH_TOKEN"]
     report = json.loads(os.environ["VALIDATION_JSON"])
     body = build_comment_body(report, args.manifest)
-    delete_existing_comment(args.repo, args.pr_number, token)
+    delete_existing_comment(args.repo, args.pr_number, token, args.manifest)
     publish_comment(args.repo, args.pr_number, token, body)
     update_step_summary(body)
