@@ -1,6 +1,9 @@
 name: Example Workflow
 
 on:
+  release:
+    types:
+      - published
   workflow_dispatch:
   workflow_call:
 
