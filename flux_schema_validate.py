@@ -132,10 +132,10 @@ if __name__ == "__main__":
     token = os.environ["GH_TOKEN"]
     report = json.loads(os.environ["VALIDATION_JSON"])
     body = build_comment_body(report, args.manifest)
+    delete_existing_comment(args.repo, args.pr_number, token, args.manifest)
     match body:
         # if there is non-empty body, process and fail the action
         case str():
-            delete_existing_comment(args.repo, args.pr_number, token, args.manifest)
             publish_comment(args.repo, args.pr_number, token, body)
             update_step_summary(body)
             sys.exit(1)
