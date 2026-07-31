@@ -113,3 +113,7 @@ jobs:
         uses: issue-ops/releaser@v3
         with:
           tag: v${{ steps.version.outputs.version }}
+
+  run-example-workflow:
+    needs: publish
+    uses: ./.github/workflows/example.yml
