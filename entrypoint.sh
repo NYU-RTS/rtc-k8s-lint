@@ -6,9 +6,11 @@ set -euo pipefail
 # Reset HOME so flux finds it regardless of how the container is invoked.
 export HOME=/root
 
-# Use INPUT_<INPUT_NAME> to get the value of an input
-# Use workflow commands to do things like set debug messages
-echo "::notice file=entrypoint.sh,line=5, got input location as: $INPUT_LOCATION"
+# Use INPUT_<INPUT_NAME> to get the value of an input. Allow a positional
+# argument for local debugging, but default to the action input.
+INPUT_LOCATION="${1:-${INPUT_LOCATION:-.}}"
+
+echo "::notice file=entrypoint.sh,line=12::linting manifests from $INPUT_LOCATION"
 
 # Write outputs to the $GITHUB_OUTPUT file
 manifest="$(kustomize build --enable-helm "$INPUT_LOCATION")"
@@ -19,7 +21,7 @@ manifest="$(kustomize build --enable-helm "$INPUT_LOCATION")"
 } >> "$GITHUB_OUTPUT"
 
 # Validate output with flux schema
-validation_json="$(echo "$manifest" | flux schema validate -s ecosystem -v -o json)"
+validation_json="$(printf '%s' "$manifest" | flux schema validate -s ecosystem -v -o json)"
 {
   echo "validation-json<<EOF"
   printf '%s\n' "$validation_json"

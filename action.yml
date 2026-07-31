@@ -1,24 +1,48 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+---
+name: RTC Kubernetes Lint
+description: |
+  Render K8s manifests with Kustomize and validate them with Flux schema.
+author: NYU RTS
 
 # Define your inputs here.
 inputs:
   location:
-    description: Your input description here
+    description: Path to the Kustomize root to render and validate
     required: true
     default: .
 
 # Define your outputs here.
 outputs:
   manifest:
-    description: Your output description here
+    description: The rendered manifest produced by Kustomize
+    value: ${{ steps.lint.outputs.manifest }}
   validation-json:
     description: The Flux schema validation result in JSON format
+    value: ${{ steps.lint.outputs['validation-json'] }}
 
 # Update the image repository and tag below.
 runs:
-  using: docker
-  image: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.10.0
-  env:
-    INPUT_LOCATION: ${{ inputs.location }}
+  using: "composite"
+  steps:
+    - name: lint
+      id: lint
+      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.11.0
+      env:
+        INPUT_LOCATION: ${{ inputs.location }}
+    - name: Refresh PR validation comment
+      if: >-
+        github.event_name == 'pull_request' ||
+        github.event_name == 'pull_request_target'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+        MANIFEST_PATH: ${{ inputs.location }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPOSITORY: ${{ github.repository }}
+        VALIDATION_JSON: ${{ steps.lint.outputs['validation-json'] }}
+      run: |
+        python3 "$GITHUB_ACTION_PATH/flux_schema_validate.py" \
+          --manifest "$MANIFEST_PATH" \
+          --pr-number "$PR_NUMBER" \
+          --repo "$REPOSITORY"
