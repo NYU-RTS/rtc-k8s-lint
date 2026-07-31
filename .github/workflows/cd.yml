@@ -112,4 +112,5 @@ jobs:
         id: release
         uses: issue-ops/releaser@v3
         with:
+          github_token: ${{ secrets.RELEASE_TOKEN }}
           tag: v${{ steps.version.outputs.version }}
