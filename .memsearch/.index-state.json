@@ -1,11 +1,11 @@
 {
   "collection": "ms_rtc_k8s_lint_ddc14d61",
   "failed_files": [],
-  "indexed_chunks": 0,
+  "indexed_chunks": 1,
   "indexed_files": 2,
-  "last_completed_at": "2026-07-31T16:35:34.738343Z",
-  "last_started_at": "2026-07-31T16:35:33.145576Z",
-  "last_success_at": "2026-07-31T16:35:34.738343Z",
+  "last_completed_at": "2026-07-31T18:38:18.066861Z",
+  "last_started_at": "2026-07-31T18:38:17.061802Z",
+  "last_success_at": "2026-07-31T18:38:18.066861Z",
   "milvus_uri": "~/.memsearch/milvus.db",
   "operation": "index",
   "paths": [
@@ -14,5 +14,5 @@
   "schema_version": 1,
   "status": "ok",
   "total_files": 2,
-  "updated_at": "2026-07-31T16:35:34.738343Z"
+  "updated_at": "2026-07-31T18:38:18.066861Z"
 }
