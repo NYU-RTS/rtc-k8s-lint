@@ -16,7 +16,7 @@ jobs:
     name: runner / yamllint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@7
+      - uses: actions/checkout@v7
       - name: yamllint
         uses: reviewdog/action-yamllint@e02a49fdf53f51ddd8dfa89b09aa975043aeba38 #v1.23.0
         with:
