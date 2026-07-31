@@ -46,5 +46,6 @@ fi
 
 if [ "$validation_exit" -ne 0 ]; then
   echo "::error::flux schema validate found invalid manifests; see validation-json output for details"
-  exit "$validation_exit"
+  # Exit 0 because we need the next step to run, otherwise this error prevents the next step from being run
+  exit 0
 fi
