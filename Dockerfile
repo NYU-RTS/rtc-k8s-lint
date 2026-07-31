@@ -6,12 +6,8 @@ RUN dnf update -y && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
-# install fluxcd binary, there is no fedora rpm for it 
+# install fluxcd binary, there is no fedora rpm for it
 RUN curl -s https://fluxcd.io/install.sh | sudo bash
-
-# install the schema plugin
-RUN flux plugin install schema
-
 
 # Set the working directory inside the container.
 WORKDIR /usr/src
@@ -26,6 +22,9 @@ RUN groupadd actiongroup && \
 RUN chown -R actionuser:actiongroup /usr/src && \
     chmod +x /usr/src/entrypoint.sh
 USER actionuser
+
+# install the schema plugin as actionuser, since flux stores plugins under $HOME
+RUN flux plugin install schema
 
 # Configure the container to be run as an executable.
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
