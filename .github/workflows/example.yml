@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Run the Container Action
         id: run
-        uses: NYU-RTS/rtc-k8s-lint@v0.5.0
+        uses: NYU-RTS/rtc-k8s-lint@v0.6.0
         with:
           location: "/github/workspace/example"
 
