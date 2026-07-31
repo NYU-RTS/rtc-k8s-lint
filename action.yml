@@ -13,6 +13,8 @@ inputs:
 outputs:
   manifest:
     description: Your output description here
+  validation-json:
+    description: The Flux schema validation result in JSON format
 
 # Update the image repository and tag below.
 runs:

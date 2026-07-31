@@ -7,8 +7,16 @@ echo "::notice file=entrypoint.sh,line=5, got input location as: $INPUT_LOCATION
 
 # Write outputs to the $GITHUB_OUTPUT file
 manifest="$(kustomize build --enable-helm "$INPUT_LOCATION")"
-echo "manifest=$manifest" >> "$GITHUB_OUTPUT"
+{
+  echo "manifest<<EOF"
+  printf '%s\n' "$manifest"
+  echo "EOF"
+} >> "$GITHUB_OUTPUT"
 
 # Validate output with flux schema
 validation_json="$(echo "$manifest" | flux schema validate -s ecosystem -v -o json)"
-echo "validation-json=$validation_json" >> "$GITHUB_OUTPUT"
+{
+  echo "validation-json<<EOF"
+  printf '%s\n' "$validation_json"
+  echo "EOF"
+} >> "$GITHUB_OUTPUT"
