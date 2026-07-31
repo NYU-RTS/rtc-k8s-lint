@@ -3,7 +3,7 @@ name: Example Workflow
 on:
   workflow_dispatch:
   workflow_call:
-    
+
 permissions:
   contents: read
   packages: read
