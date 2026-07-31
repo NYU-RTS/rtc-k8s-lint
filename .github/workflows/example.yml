@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: Run the Container Action
         id: run
-        uses: NYU-RTS/rtc-k8s-lint@v0.7.0
+        uses: ./
         with:
           location: "/github/workspace/example"
 

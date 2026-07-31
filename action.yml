@@ -13,10 +13,12 @@ inputs:
 outputs:
   manifest:
     description: Your output description here
+  validation-json:
+    description: The Flux schema validation result in JSON format
 
 # Update the image repository and tag below.
 runs:
   using: docker
-  image: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.7.0
+  image: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.8.0
   env:
     INPUT_LOCATION: ${{ inputs.location }}

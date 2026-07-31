@@ -15,15 +15,10 @@ WORKDIR /usr/src
 # Copy any source file(s) required for the action.
 COPY entrypoint.sh .
 
-# Create a non-root user, set file permissions, switch to it.
-RUN groupadd actiongroup && \
-    useradd actionuser && \
-    usermod -aG actiongroup actionuser
-RUN chown -R actionuser:actiongroup /usr/src && \
-    chmod +x /usr/src/entrypoint.sh
-USER actionuser
+RUN chmod +x /usr/src/entrypoint.sh
 
-# install the schema plugin as actionuser, since flux stores plugins under $HOME
+# Install the schema plugin at build time. Keep the runtime user as root so the
+# mounted GitHub Actions command files remain writable.
 RUN flux plugin install schema
 
 # Configure the container to be run as an executable.
