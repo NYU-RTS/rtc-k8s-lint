@@ -12,14 +12,12 @@ INPUT_LOCATION="${1:-${INPUT_LOCATION:-.}}"
 
 echo "::notice::linting manifests from $INPUT_LOCATION"
 
-stderr_file="$(mktemp)"
-trap 'rm -f "$stderr_file"' EXIT
-
-if ! manifest="$(kustomize build --enable-helm "$INPUT_LOCATION" 2>"$stderr_file")"; then
+# kustomize/flux write their own errors to stderr, which the runner already
+# surfaces in the job log -- no need to capture and replay it ourselves.
+manifest="$(kustomize build --enable-helm "$INPUT_LOCATION")" || {
   echo "::error::kustomize build failed for '$INPUT_LOCATION'"
-  while IFS= read -r line; do echo "::error::$line"; done < "$stderr_file"
   exit 1
-fi
+}
 
 # Write outputs to the $GITHUB_OUTPUT file
 {
@@ -28,10 +26,15 @@ fi
   echo "EOF"
 } >> "$GITHUB_OUTPUT"
 
-: > "$stderr_file"
-if ! validation_json="$(printf '%s' "$manifest" | flux schema validate -s ecosystem -v -o json 2>"$stderr_file")"; then
-  echo "::error::flux schema validate failed"
-  while IFS= read -r line; do echo "::error::$line"; done < "$stderr_file"
+# flux exits non-zero both when it finds schema violations (expected -- it
+# still writes a full JSON report to stdout) and when it fails to run at all
+# (stdout is empty in that case). Capture the exit code without letting
+# `set -e` kill the script so we can tell those two cases apart.
+validation_exit=0
+validation_json="$(printf '%s' "$manifest" | flux schema validate -s ecosystem -v -o json)" || validation_exit=$?
+
+if [ -z "$validation_json" ]; then
+  echo "::error::flux schema validate produced no report (exit $validation_exit)"
   exit 1
 fi
 
@@ -40,3 +43,8 @@ fi
   printf '%s\n' "$validation_json"
   echo "EOF"
 } >> "$GITHUB_OUTPUT"
+
+if [ "$validation_exit" -ne 0 ]; then
+  echo "::error::flux schema validate found invalid manifests; see validation-json output for details"
+  exit "$validation_exit"
+fi
