@@ -1,4 +1,4 @@
-## Usage
+## `rtc-k8s-lint`
 
 When this action runs on a pull request, it can refresh a single bot comment with
 the latest Flux schema validation failures. Grant the job `pull-requests: write`
