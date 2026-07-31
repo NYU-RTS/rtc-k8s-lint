@@ -1,10 +1,17 @@
-# Set the base image to use for subsequent instructions.
+# alpine/arch do not ship helm v4 as of this comment so use fedora
 FROM fedora:45
 
 RUN dnf update -y && \
-    dnf install -y kustomize helm && \
+    dnf install -y kustomize helm curl which && \
     dnf clean all && \
     rm -rf /var/cache/dnf
+
+# install fluxcd binary, there is no fedora rpm for it 
+RUN curl -s https://fluxcd.io/install.sh | sudo bash
+
+# install the schema plugin
+RUN flux plugin install schema
+
 
 # Set the working directory inside the container.
 WORKDIR /usr/src

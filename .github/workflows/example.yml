@@ -1,10 +1,8 @@
 name: Example Workflow
 
 on:
-  push:
-    branches:
-    - main
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -16,15 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Wait for CD workflow to tag a new release
-        id: wait
-        run: sleep 15m
       - name: Run the Container Action
         id: run
-        uses: NYU-RTS/rtc-k8s-lint@v0.4.0
+        uses: NYU-RTS/rtc-k8s-lint@v0.5.0
         with:
           location: "/github/workspace/example"
 
-      - name: Print Output
-        id: output
+      - name: Print Manifest
+        id: print-manifest
         run: echo "${{ steps.run.outputs.manifest }}"
+
+      - name: Print Validation Result
+        id: print-valitaion-result
+        run: echo "${{ steps.run.outputs.validation-json }}"
