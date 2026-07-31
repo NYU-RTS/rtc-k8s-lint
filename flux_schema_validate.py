@@ -73,7 +73,7 @@ def format_subject(resource):
     )
 
 
-def build_comment_body(report, manifest):
+def build_comment_body(report, manifest) -> str | None:
     invalid_results = [
         entry
         for entry in report.get("report", {}).get("results", [])
@@ -132,6 +132,13 @@ if __name__ == "__main__":
     token = os.environ["GH_TOKEN"]
     report = json.loads(os.environ["VALIDATION_JSON"])
     body = build_comment_body(report, args.manifest)
-    delete_existing_comment(args.repo, args.pr_number, token, args.manifest)
-    publish_comment(args.repo, args.pr_number, token, body)
-    update_step_summary(body)
+    match body:
+        # if there is non-empty body, process and fail the action
+        case str():
+            delete_existing_comment(args.repo, args.pr_number, token, args.manifest)
+            publish_comment(args.repo, args.pr_number, token, body)
+            update_step_summary(body)
+            sys.exit(1)
+        # if there is no body, do nothing and exit with success
+        case None:
+            sys.exit(0)
