@@ -1,6 +1,11 @@
 #!/bin/sh -l
 set -euo pipefail
 
+# GitHub Actions overrides HOME to /github/home for container actions, but the
+# flux schema plugin was installed under /root/.fluxcd during the image build.
+# Reset HOME so flux finds it regardless of how the container is invoked.
+export HOME=/root
+
 # Use INPUT_<INPUT_NAME> to get the value of an input
 # Use workflow commands to do things like set debug messages
 echo "::notice file=entrypoint.sh,line=5, got input location as: $INPUT_LOCATION"
