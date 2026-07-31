@@ -2,10 +2,8 @@ name: Example Workflow
 
 on:
   release:
-    types:
-      - published
+    types: [published]
   workflow_dispatch:
-  workflow_call:
 
 permissions:
   contents: read
@@ -17,9 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v7
       - name: Run the Container Action
         id: run
-        uses: NYU-RTS/rtc-k8s-lint@v0.6.0
+        uses: NYU-RTS/rtc-k8s-lint@v0.7.0
         with:
           location: "/github/workspace/example"
 
