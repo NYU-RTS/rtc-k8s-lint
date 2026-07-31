@@ -17,6 +17,6 @@ outputs:
 # Update the image repository and tag below.
 runs:
   using: docker
-  image: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.3.0
+  image: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.4.0
   env:
     INPUT_LOCATION: ${{ inputs.location }}
