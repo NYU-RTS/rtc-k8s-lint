@@ -20,7 +20,7 @@ jobs:
         id: run
         uses: ./
         with:
-          location: "/github/workspace/example"
+          location: "example"
 
       - name: Print Manifest
         id: print-manifest

@@ -2,7 +2,7 @@
 FROM fedora:45
 
 RUN dnf update -y && \
-    dnf install -y kustomize helm curl which && \
+    dnf install -y kustomize helm curl which git && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
