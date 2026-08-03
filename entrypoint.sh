@@ -22,11 +22,9 @@ if [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
   host="${GITHUB_SERVER_URL#https://}"
   git_username="${INPUT_GITHUB_USERNAME:-x-access-token}"
   authenticated="https://${git_username}:${INPUT_GITHUB_TOKEN}@${host}/"
-  basic_auth="$(printf '%s:%s' "$git_username" "$INPUT_GITHUB_TOKEN" | base64 | tr -d '\n')"
   git config --global "url.${authenticated}.insteadOf" "https://${host}/"
   git config --global "url.${authenticated}.insteadOf" "git@${host}:"
   git config --global "url.${authenticated}.insteadOf" "ssh://git@${host}/"
-  git config --global "http.https://${host}/.extraheader" "AUTHORIZATION: basic ${basic_auth}"
 fi
 
 echo "::notice::linting manifests from $INPUT_LOCATION"
