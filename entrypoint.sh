@@ -6,9 +6,10 @@ set -euo pipefail
 # Reset HOME so flux finds it regardless of how the container is invoked.
 export HOME=/root
 
-# Use INPUT_<INPUT_NAME> to get the value of an input. Allow a positional
-# argument for local debugging, but default to the action input.
-INPUT_LOCATION="${1:-${INPUT_LOCATION:-.}}"
+# Use INPUT_<INPUT_NAME> to get the value of an input. This must be provided
+# by the caller.
+: "${INPUT_LOCATION:?INPUT_LOCATION must be set}"
+INPUT_LOCATION="/github/workspace/$INPUT_LOCATION"
 
 # Kustomize can pull in remote bases from git (e.g. https://github.com/org/repo
 # or git@github.com:org/repo), which it resolves by shelling out to the system

@@ -7,9 +7,8 @@ author: NYU RTS
 # Define your inputs here.
 inputs:
   location:
-    description: Path to the Kustomize root to render and validate
+    description: Path to the Kustomize root, relative to the repository root
     required: true
-    default: .
   github-token:
     description: >-
       Token used to authenticate git operations for private remote Kustomize
@@ -33,7 +32,7 @@ runs:
   steps:
     - name: lint
       id: lint
-      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.18.0
+      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.19.0
       env:
         INPUT_LOCATION: ${{ inputs.location }}
         INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
