@@ -15,13 +15,18 @@ INPUT_LOCATION="/github/workspace/$INPUT_LOCATION"
 # or git@github.com:org/repo), which it resolves by shelling out to the system
 # git binary. Private repos need credentials the container doesn't otherwise
 # have, so rewrite git/ssh/https references to the GitHub host into
-# token-authenticated HTTPS URLs when a token is provided.
+# token-authenticated HTTPS URLs when a token is provided. Fine-grained PATs use
+# the PAT owner's GitHub username; GitHub App and workflow tokens keep the
+# x-access-token fallback.
 if [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
   host="${GITHUB_SERVER_URL#https://}"
-  authenticated="https://x-access-token:${INPUT_GITHUB_TOKEN}@${host}/"
+  git_username="${INPUT_GITHUB_USERNAME:-x-access-token}"
+  authenticated="https://${git_username}:${INPUT_GITHUB_TOKEN}@${host}/"
+  basic_auth="$(printf '%s:%s' "$git_username" "$INPUT_GITHUB_TOKEN" | base64 | tr -d '\n')"
   git config --global "url.${authenticated}.insteadOf" "https://${host}/"
   git config --global "url.${authenticated}.insteadOf" "git@${host}:"
   git config --global "url.${authenticated}.insteadOf" "ssh://git@${host}/"
+  git config --global "http.https://${host}/.extraheader" "AUTHORIZATION: basic ${basic_auth}"
 fi
 
 echo "::notice::linting manifests from $INPUT_LOCATION"

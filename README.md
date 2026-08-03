@@ -34,10 +34,12 @@ by shelling out to `git` inside the action's container. For private repos,
 the container needs credentials to clone them. The `github-token` input is
 used to configure git to authenticate those clones and defaults to the
 workflow's `GITHUB_TOKEN`. If the remote base lives in a different repo or
-org than the one running the workflow, pass a PAT or GitHub App token with
-access to that repo:
+org than the one running the workflow, pass a fine-grained PAT or GitHub App
+token with access to that repo. When using a fine-grained PAT, also set
+`github-username` to the PAT owner's GitHub username:
 
 ```yaml
 with:
   github-token: ${{ secrets.CROSS_REPO_TOKEN }}
+  github-username: your-service-account
 ```
