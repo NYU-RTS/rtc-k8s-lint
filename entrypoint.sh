@@ -10,6 +10,19 @@ export HOME=/root
 # argument for local debugging, but default to the action input.
 INPUT_LOCATION="${1:-${INPUT_LOCATION:-.}}"
 
+# Kustomize can pull in remote bases from git (e.g. https://github.com/org/repo
+# or git@github.com:org/repo), which it resolves by shelling out to the system
+# git binary. Private repos need credentials the container doesn't otherwise
+# have, so rewrite git/ssh/https references to the GitHub host into
+# token-authenticated HTTPS URLs when a token is provided.
+if [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
+  host="${GITHUB_SERVER_URL#https://}"
+  authenticated="https://x-access-token:${INPUT_GITHUB_TOKEN}@${host}/"
+  git config --global "url.${authenticated}.insteadOf" "https://${host}/"
+  git config --global "url.${authenticated}.insteadOf" "git@${host}:"
+  git config --global "url.${authenticated}.insteadOf" "ssh://git@${host}/"
+fi
+
 echo "::notice::linting manifests from $INPUT_LOCATION"
 
 # kustomize/flux write their own errors to stderr, which the runner already

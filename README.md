@@ -16,3 +16,19 @@ If a single PR runs this action against multiple manifest locations (e.g.
 `cicd/dev` and `cicd/prod`), each location gets its own persistent comment,
 keyed by the `location` input — one run does not overwrite another's comment.
 
+### Private remote Kustomize bases
+
+If your `kustomization.yaml` pulls in resources from a remote git repository
+(e.g. `https://github.com/org/repo//path?ref=main`), Kustomize resolves that
+by shelling out to `git` inside the action's container. For private repos,
+the container needs credentials to clone them. The `github-token` input is
+used to configure git to authenticate those clones and defaults to the
+workflow's `GITHUB_TOKEN`. If the remote base lives in a different repo or
+org than the one running the workflow, pass a PAT or GitHub App token with
+access to that repo:
+
+```yaml
+with:
+  github-token: ${{ secrets.CROSS_REPO_TOKEN }}
+```
+
