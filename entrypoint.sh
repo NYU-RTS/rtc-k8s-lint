@@ -19,12 +19,9 @@ INPUT_LOCATION="/github/workspace/$INPUT_LOCATION"
 # the PAT owner's GitHub username; GitHub App and workflow tokens keep the
 # x-access-token fallback.
 if [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
-  host="${GITHUB_SERVER_URL#https://}"
-  git_username="${INPUT_GITHUB_USERNAME:-x-access-token}"
-  authenticated="https://${git_username}:${INPUT_GITHUB_TOKEN}@${host}/"
-  git config --global "url.${authenticated}.insteadOf" "https://${host}/"
-  git config --global "url.${authenticated}.insteadOf" "git@${host}:"
-  git config --global "url.${authenticated}.insteadOf" "ssh://git@${host}/"
+  echo "INPUT_GITHUB_TOKEN" | gh auth login --with-token
+  gh auth setup-git
+  git config --global user.name "INPUT_GITHUB_USERNAME"
 fi
 
 echo "::notice::linting manifests from $INPUT_LOCATION"
