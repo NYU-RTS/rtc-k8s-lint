@@ -14,14 +14,13 @@ INPUT_LOCATION="/github/workspace/$INPUT_LOCATION"
 # Kustomize can pull in remote bases from git (e.g. https://github.com/org/repo
 # or git@github.com:org/repo), which it resolves by shelling out to the system
 # git binary. Private repos need credentials the container doesn't otherwise
-# have, so rewrite git/ssh/https references to the GitHub host into
-# token-authenticated HTTPS URLs when a token is provided. Fine-grained PATs use
-# the PAT owner's GitHub username; GitHub App and workflow tokens keep the
-# x-access-token fallback.
+# have, so teach git to use the GitHub CLI credential helper for github.com
+# when a token is provided.
 if [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
-  echo "INPUT_GITHUB_TOKEN" | gh auth login --with-token
-  gh auth setup-git
-  git config --global user.name "INPUT_GITHUB_USERNAME"
+  export GH_PROMPT_DISABLED=1
+  export GH_HOST=github.com
+  export GH_TOKEN="$INPUT_GITHUB_TOKEN"
+  gh auth setup-git --force --hostname github.com
 fi
 
 echo "::notice::linting manifests from $INPUT_LOCATION"

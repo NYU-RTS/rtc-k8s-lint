@@ -2,7 +2,7 @@
 FROM fedora:45
 
 RUN dnf update -y && \
-    dnf install dnf5-plugins && \
+    dnf install -y dnf5-plugins && \
     dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo && \
     dnf install -y kustomize helm curl which git gh && \
     dnf clean all && \
