@@ -12,15 +12,11 @@ inputs:
   github-token:
     description: >-
       Token used to authenticate git operations for private remote Kustomize
-      bases. Defaults to the workflow's GITHUB_TOKEN; pass a fine-grained PAT or
-      GitHub App token if remote bases live outside the current repo's access.
+      bases via the GitHub CLI credential helper. Defaults to the workflow's
+      GITHUB_TOKEN; pass a fine-grained PAT or GitHub App token if private
+      remote bases on github.com live outside the current repo's access.
     required: false
     default: ${{ github.token }}
-  github-username:
-    description: >-
-      GitHub username that owns github-token when using a fine-grained PAT.
-      Leave unset for GITHUB_TOKEN or GitHub App tokens.
-    required: false
 
 # Define your outputs here.
 outputs:
@@ -37,11 +33,10 @@ runs:
   steps:
     - name: lint
       id: lint
-      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.20.0
+      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.21.0
       env:
         INPUT_LOCATION: ${{ inputs.location }}
         INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
-        INPUT_GITHUB_USERNAME: ${{ inputs.github-username }}
     - name: Refresh PR validation comment
       if: >-
         github.event_name == 'pull_request' ||

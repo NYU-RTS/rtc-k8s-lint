@@ -32,14 +32,18 @@ If your `kustomization.yaml` pulls in resources from a remote git repository
 (e.g. `https://github.com/org/repo//path?ref=main`), Kustomize resolves that
 by shelling out to `git` inside the action's container. For private repos,
 the container needs credentials to clone them. The `github-token` input is
-used to configure git to authenticate those clones and defaults to the
-workflow's `GITHUB_TOKEN`. If the remote base lives in a different repo or
-org than the one running the workflow, pass a fine-grained PAT or GitHub App
-token with access to that repo. When using a fine-grained PAT, also set
-`github-username` to the PAT owner's GitHub username:
+used to configure the GitHub CLI credential helper for those clones and
+defaults to the workflow's `GITHUB_TOKEN`. If the remote base lives in a
+different repo or org than the one running the workflow, pass a fine-grained
+PAT or GitHub App token with access to that repo:
 
 ```yaml
 with:
   github-token: ${{ secrets.CROSS_REPO_TOKEN }}
-  github-username: your-service-account
 ```
+
+No username is needed with this flow. The older implementation embedded
+credentials into rewritten HTTPS URLs, which required a username field for
+basic auth. The current implementation lets git ask the GitHub CLI credential
+helper for credentials instead, so the token is supplied directly and the
+workflow does not need a separate `github-username` input.
