@@ -1,14 +1,21 @@
 ---
 name: RTC Kubernetes Lint
-description: |
-  Render K8s manifests with Kustomize and validate them with Flux schema.
+description: >-
+  Validate K8s manifests with Flux schema, optionally rendering them with
+  Kustomize.
 author: NYU RTS
 
 # Define your inputs here.
 inputs:
   location:
-    description: Path to the Kustomize root, relative to the repository root
+    description: >-
+      Path to the manifests or Kustomize root, relative to the repository root
     required: true
+  kustomize:
+    description: >-
+      Whether to render the manifests with Kustomize before validation
+    required: false
+    default: 'false'
   github-token:
     description: >-
       Token used to authenticate git operations for private remote Kustomize
@@ -21,7 +28,7 @@ inputs:
 # Define your outputs here.
 outputs:
   manifest:
-    description: The rendered manifest produced by Kustomize
+    description: The manifest passed to Flux schema validation
     value: ${{ steps.lint.outputs.manifest }}
   validation-json:
     description: The Flux schema validation result in JSON format
@@ -33,9 +40,10 @@ runs:
   steps:
     - name: lint
       id: lint
-      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.21.0
+      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.22.0
       env:
         INPUT_LOCATION: ${{ inputs.location }}
+        INPUT_KUSTOMIZE: ${{ inputs.kustomize }}
         INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
     - name: Refresh PR validation comment
       if: >-

@@ -21,6 +21,7 @@ jobs:
         uses: ./
         with:
           location: "example"
+          kustomize: true
 
       - name: Print Manifest
         id: print-manifest
