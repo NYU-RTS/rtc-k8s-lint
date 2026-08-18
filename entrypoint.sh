@@ -6,8 +6,9 @@ set -euo pipefail
 # Reset HOME so flux finds it regardless of how the container is invoked.
 export HOME=/root
 
-# Use INPUT_<INPUT_NAME> to get the value of an input. This must be provided
-# by the caller.
+# Use INPUT_<INPUT_NAME> to get the value of an input. The location must be
+# provided by the caller and may point to either a Kustomize root or a bare
+# manifest file.
 : "${INPUT_LOCATION:?INPUT_LOCATION must be set}"
 INPUT_LOCATION="/github/workspace/$INPUT_LOCATION"
 
@@ -16,7 +17,7 @@ INPUT_LOCATION="/github/workspace/$INPUT_LOCATION"
 # git binary. Private repos need credentials the container doesn't otherwise
 # have, so teach git to use the GitHub CLI credential helper for github.com
 # when a token is provided.
-if [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
+if [ "${INPUT_KUSTOMIZE:-true}" = "true" ] && [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
   export GH_PROMPT_DISABLED=1
   export GH_HOST=github.com
   export GH_TOKEN="$INPUT_GITHUB_TOKEN"
@@ -25,12 +26,19 @@ fi
 
 echo "::notice::linting manifests from $INPUT_LOCATION"
 
-# kustomize/flux write their own errors to stderr, which the runner already
-# surfaces in the job log -- no need to capture and replay it ourselves.
-manifest="$(kustomize build --enable-helm "$INPUT_LOCATION")" || {
-  echo "::error::kustomize build failed for '$INPUT_LOCATION'"
-  exit 1
-}
+if [ "${INPUT_KUSTOMIZE:-true}" = "true" ]; then
+  # kustomize/flux write their own errors to stderr, which the runner already
+  # surfaces in the job log -- no need to capture and replay it ourselves.
+  manifest="$(kustomize build --enable-helm "$INPUT_LOCATION")" || {
+    echo "::error::kustomize build failed for '$INPUT_LOCATION'"
+    exit 1
+  }
+else
+  manifest="$(cat "$INPUT_LOCATION")" || {
+    echo "::error::could not read manifests from '$INPUT_LOCATION'"
+    exit 1
+  }
+fi
 
 # Write outputs to the $GITHUB_OUTPUT file
 {

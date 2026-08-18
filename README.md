@@ -13,13 +13,24 @@ Without it, the GitHub API calls to read/write the PR comment fail with a 403.
 On non-PR events, the action still emits its normal outputs and step summary.
 
 The `location` input is required and must be relative to the repository root.
-The action resolves it inside the container as `/github/workspace/<location>`, so
-workflow authors should pass values like `example`, `cicd/dev`, or
-`services/api/overlays/prod` rather than container-internal absolute paths.
+By default, the action renders the location as a Kustomize root. To validate a
+bare manifest file without Kustomize, set `kustomize: false`. The action
+resolves the location inside the container as `/github/workspace/<location>`,
+so workflow authors should pass values like `crds.yaml`, `example`, `cicd/dev`,
+or `services/api/overlays/prod` rather than container-internal absolute paths.
+
+```yaml
+with:
+  location: manifest.yaml
+  kustomize: false
+```
+
+Kustomize rendering is enabled by default:
 
 ```yaml
 with:
   location: cicd/dev
+  kustomize: true
 ```
 
 If a single PR runs this action against multiple manifest locations (e.g.

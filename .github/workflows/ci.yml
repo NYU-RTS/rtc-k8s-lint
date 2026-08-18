@@ -50,10 +50,12 @@ jobs:
         id: run
         env:
           INPUT_LOCATION: "example"
+          INPUT_KUSTOMIZE: "true"
           GITHUB_OUTPUT: "/tmp/output"
         run: |
           docker run \
             -v ${{ github.workspace }}:/github/workspace:rw \
             --env INPUT_LOCATION="${{ env.INPUT_LOCATION }}" \
+            --env INPUT_KUSTOMIZE="${{ env.INPUT_KUSTOMIZE }}" \
             --env GITHUB_OUTPUT="${{ env.GITHUB_OUTPUT }}" \
             --rm ${{ env.TEST_TAG }}
