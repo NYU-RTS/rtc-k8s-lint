@@ -17,7 +17,7 @@ INPUT_LOCATION="/github/workspace/$INPUT_LOCATION"
 # git binary. Private repos need credentials the container doesn't otherwise
 # have, so teach git to use the GitHub CLI credential helper for github.com
 # when a token is provided.
-if [ "${INPUT_KUSTOMIZE:-false}" = "true" ] && [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
+if [ "${INPUT_KUSTOMIZE:-true}" = "true" ] && [ -n "${INPUT_GITHUB_TOKEN:-}" ]; then
   export GH_PROMPT_DISABLED=1
   export GH_HOST=github.com
   export GH_TOKEN="$INPUT_GITHUB_TOKEN"
@@ -26,7 +26,7 @@ fi
 
 echo "::notice::linting manifests from $INPUT_LOCATION"
 
-if [ "${INPUT_KUSTOMIZE:-false}" = "true" ]; then
+if [ "${INPUT_KUSTOMIZE:-true}" = "true" ]; then
   # kustomize/flux write their own errors to stderr, which the runner already
   # surfaces in the job log -- no need to capture and replay it ourselves.
   manifest="$(kustomize build --enable-helm "$INPUT_LOCATION")" || {
