@@ -1,5 +1,5 @@
 # alpine/arch do not ship helm v4 as of this comment so use fedora
-FROM fedora:45
+FROM fedora:46
 
 RUN dnf update -y && \
     dnf install -y dnf5-plugins && \
