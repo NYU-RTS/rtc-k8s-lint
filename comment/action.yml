@@ -1,3 +1,4 @@
+---
 name: RTC Kubernetes Lint - Comment
 description: >-
   Post rtc-k8s-lint validation reports as PR comments from a trusted

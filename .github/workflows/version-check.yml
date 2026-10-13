@@ -1,10 +1,11 @@
+---
 # This workflow checks the version of the container image that is being built
 # in the current pull request. If the version has already been published, the
 # workflow fails to prevent PRs from being merged until the version has been
 # incremented in the manifest file.
 name: Version Check
 
-on:
+"on":
   pull_request:
     branches:
       - main

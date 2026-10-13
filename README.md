@@ -93,7 +93,7 @@ jobs:
         with:
           persist-credentials: false
       - id: lint
-        uses: NYU-RTS/rtc-k8s-lint@v0.23.0
+        uses: NYU-RTS/rtc-k8s-lint@v0.24.0
         with:
           location: cicd/dev
           comment: false
@@ -127,7 +127,7 @@ jobs:
           path: ${{ runner.temp }}/reports
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
-      - uses: NYU-RTS/rtc-k8s-lint/comment@v0.23.0
+      - uses: NYU-RTS/rtc-k8s-lint/comment@v0.24.0
         with:
           reports-dir: ${{ runner.temp }}/reports
 ```

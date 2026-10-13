@@ -1,6 +1,7 @@
+---
 name: Example Workflow
 
-on:
+"on":
   release:
     types: [published]
   workflow_dispatch:
