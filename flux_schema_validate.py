@@ -119,26 +119,55 @@ def publish_comment(repo, pr_number, token, body):
     )
 
 
+def write_report(path, manifest, pr_number, report):
+    # Consumed by comment/action.yml in a separate, trusted workflow. That
+    # workflow treats every field as untrusted, so this only needs to carry
+    # what the lint job knows.
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as report_file:
+        json.dump(
+            {
+                "location": manifest,
+                "pr_number": int(pr_number) if pr_number else None,
+                "validation": report,
+            },
+            report_file,
+        )
+
+
 parser = argparse.ArgumentParser(
     prog="flux_schema_validate.py",
     description="Publish Flux schema validation results to a pull request comment.",
 )
 parser.add_argument("--manifest", required=True)
-parser.add_argument("--pr-number", required=True)
+parser.add_argument("--pr-number", default="")
 parser.add_argument("--repo", required=True)
+parser.add_argument(
+    "--comment",
+    choices=["true", "false"],
+    default="true",
+    help="Refresh the PR comment directly (requires a token with pull-requests: write)",
+)
+parser.add_argument(
+    "--report-out",
+    help="Also write the validation report to this path for a later comment job",
+)
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    token = os.environ["GH_TOKEN"]
     report = json.loads(os.environ["VALIDATION_JSON"])
     body = build_comment_body(report, args.manifest)
-    delete_existing_comment(args.repo, args.pr_number, token, args.manifest)
+    if args.report_out:
+        write_report(args.report_out, args.manifest, args.pr_number, report)
+    if args.comment == "true":
+        token = os.environ["GH_TOKEN"]
+        delete_existing_comment(args.repo, args.pr_number, token, args.manifest)
+        publish_comment(args.repo, args.pr_number, token, body)
     match body:
-        # if there is non-empty body, process and fail the action
+        # if there is non-empty body, fail the action
         case str():
-            publish_comment(args.repo, args.pr_number, token, body)
             update_step_summary(body)
             sys.exit(1)
-        # if there is no body, do nothing and exit with success
+        # if there is no body, exit with success
         case None:
             sys.exit(0)

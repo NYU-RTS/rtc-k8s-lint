@@ -1,9 +1,10 @@
+---
 # When a PR is merged, or when run manually, this workflow will create a
 # release and publish the container image to the GitHub Container Registry. Both
 # will be labeled with the version specified in the manifest file.
 name: Continuous Delivery
 
-on:
+"on":
   pull_request:
     types:
       - closed
