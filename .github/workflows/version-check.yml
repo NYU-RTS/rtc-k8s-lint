@@ -27,13 +27,13 @@ jobs:
     steps:
       - name: Checkout
         id: checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           fetch-tags: true
 
       - name: Check Version
         id: check-version
-        uses: issue-ops/semver@e58d2f490332e0310a78e9a0e935d8d6f898e9e3 # v3.0.0
+        uses: issue-ops/semver@e58d2f490332e0310a78e9a0e935d8d6f898e9e3  # v3.0.0
         with:
           check-only: true
           manifest-path: ${{ env.MANIFEST_PATH }}
