@@ -24,6 +24,14 @@ inputs:
       remote bases on github.com live outside the current repo's access.
     required: false
     default: ${{ github.token }}
+  comment:
+    description: >-
+      Whether to refresh the PR validation comment from this job, which needs
+      pull-requests: write. Set to 'false' to only write a report (see the
+      report-path output) and post it from a trusted workflow_run job with
+      the comment sub-action instead.
+    required: false
+    default: 'true'
 
 # Define your outputs here.
 outputs:
@@ -33,6 +41,11 @@ outputs:
   validation-json:
     description: The Flux schema validation result in JSON format
     value: ${{ steps.lint.outputs['validation-json'] }}
+  report-path:
+    description: >-
+      Path to the validation report written for the comment sub-action. Set on
+      pull_request and pull_request_target events.
+    value: ${{ steps.report.outputs['report-path'] }}
 
 # Update the image repository and tag below.
 runs:
@@ -46,19 +59,28 @@ runs:
         INPUT_KUSTOMIZE: ${{ inputs.kustomize }}
         INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
     - name: Refresh PR validation comment
+      id: report
       if: >-
         github.event_name == 'pull_request' ||
         github.event_name == 'pull_request_target'
       shell: bash
       env:
-        GH_TOKEN: ${{ github.token }}
+        COMMENT: ${{ inputs.comment }}
+        GH_TOKEN: ${{ inputs.comment == 'true' && github.token || '' }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
         MANIFEST_PATH: ${{ inputs.location }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
         REPOSITORY: ${{ github.repository }}
         VALIDATION_JSON: ${{ steps.lint.outputs['validation-json'] }}
       run: |
+        # One file per location so multiple calls in a job can share a
+        # directory.
+        report_name="$(printf '%s' "$MANIFEST_PATH" | sha256sum | cut -c1-16)"
+        report_path="$RUNNER_TEMP/rtc-k8s-lint/$report_name.json"
+        echo "report-path=$report_path" >> "$GITHUB_OUTPUT"
         python3 "$GITHUB_ACTION_PATH/flux_schema_validate.py" \
           --manifest "$MANIFEST_PATH" \
           --pr-number "$PR_NUMBER" \
-          --repo "$REPOSITORY"
+          --repo "$REPOSITORY" \
+          --comment "$COMMENT" \
+          --report-out "$report_path"

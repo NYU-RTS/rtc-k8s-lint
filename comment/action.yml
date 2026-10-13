@@ -1,0 +1,40 @@
+name: RTC Kubernetes Lint - Comment
+description: >-
+  Post rtc-k8s-lint validation reports as PR comments from a trusted
+  workflow_run job, without checking out or running any PR code.
+author: NYU RTS
+
+inputs:
+  reports-dir:
+    description: >-
+      Directory holding the downloaded report artifact from the lint run.
+      Its contents are treated as untrusted data.
+    required: true
+  github-token:
+    description: Token with pull-requests write access, used to post comments
+    required: false
+    default: ${{ github.token }}
+  head-sha:
+    description: >-
+      Commit the lint run built. Comments are only posted on the PR whose
+      current head matches it.
+    required: false
+    default: ${{ github.event.workflow_run.head_sha }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Post PR validation comments
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        HEAD_SHA: ${{ inputs.head-sha }}
+        REPORTS_DIR: ${{ inputs.reports-dir }}
+        REPOSITORY: ${{ github.repository }}
+        SCRIPTS: ${{ github.action_path }}/..
+      run: |
+        : "${HEAD_SHA:?head-sha must be set; run this from a workflow_run job}"
+        python3 "$SCRIPTS/post_pr_comments.py" \
+          --reports-dir "$REPORTS_DIR" \
+          --repo "$REPOSITORY" \
+          --head-sha "$HEAD_SHA"
