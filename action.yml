@@ -33,6 +33,14 @@ inputs:
     required: false
     default: 'true'
 
+  skip-missing-schemas:
+    description: >-
+      Pass --skip-missing-schemas to flux schema validate, so documents with no
+      schema in the public Flux catalog (e.g. exotic CRDs) are skipped instead
+      of failing validation. Leave as 'false' for strict checking.
+    required: false
+    default: 'false'
+
 # Define your outputs here.
 outputs:
   manifest:
@@ -58,6 +66,7 @@ runs:
         INPUT_LOCATION: ${{ inputs.location }}
         INPUT_KUSTOMIZE: ${{ inputs.kustomize }}
         INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
+        INPUT_SKIP_MISSING_SCHEMAS: ${{ inputs.skip-missing-schemas }}
     - name: Refresh PR validation comment
       id: report
       if: >-

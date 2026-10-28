@@ -37,6 +37,19 @@ If a single PR runs this action against multiple manifest locations (e.g.
 `cicd/dev` and `cicd/prod`), each location gets its own persistent comment,
 keyed by the `location` input — one run does not overwrite another's comment.
 
+### Custom resources without a public schema
+
+Validation is strict by default: a document whose schema cannot be found in
+the public Flux catalog fails the check. If you use exotic CRDs the catalog
+doesn't cover, set `skip-missing-schemas: true` to pass
+`--skip-missing-schemas` to `flux schema validate`, which skips those
+documents instead of failing:
+
+```yaml
+with:
+  skip-missing-schemas: true
+```
+
 ### Private remote Kustomize bases
 
 If your `kustomization.yaml` pulls in resources from a remote git repository
