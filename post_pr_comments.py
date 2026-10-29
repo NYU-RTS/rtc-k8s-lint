@@ -1,6 +1,6 @@
 """Post Flux schema validation comments from reports produced by an untrusted run.
 
-Runs in a trusted workflow_run job (see comment/action.yml). The reports come
+Runs in a trusted job separate from the lint job (see comment/action.yml). The reports come
 from an artifact that the pull request's own workflow uploaded, so a malicious
 PR can make them say anything. Every field is validated, and the target PR is
 only trusted after confirming its head commit is the one the lint run built.

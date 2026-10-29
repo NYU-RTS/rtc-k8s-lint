@@ -28,8 +28,8 @@ inputs:
     description: >-
       Whether to refresh the PR validation comment from this job, which needs
       pull-requests: write. Set to 'false' to only write a report (see the
-      report-path output) and post it from a trusted workflow_run job with
-      the comment sub-action instead.
+      report-path output) and post it from a separate job with the comment
+      sub-action instead.
     required: false
     default: 'true'
 
