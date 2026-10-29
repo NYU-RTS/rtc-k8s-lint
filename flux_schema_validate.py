@@ -77,7 +77,9 @@ def build_comment_body(report, manifest) -> str | None:
     invalid_results = [
         entry
         for entry in report.get("report", {}).get("results", [])
-        if entry.get("status") != "valid"
+        # "skipped" entries only appear with --skip-missing-schemas and are
+        # intentionally not treated as failures.
+        if entry.get("status") not in ("valid", "skipped")
     ]
     if not invalid_results:
         return None
