@@ -6,8 +6,8 @@ FROM registry.access.redhat.com/hi/core-runtime:latest-builder AS build
 # the amd64 default supports the legacy builder.
 ARG TARGETARCH=amd64
 ARG KUSTOMIZE_VERSION=5.8.3
-ARG GH_VERSION=2.102.0
-ARG FLUX_VERSION=2.9.6
+ARG GH_VERSION=2.103.3
+ARG FLUX_VERSION=2.10.0
 
 USER 0
 

@@ -1,8 +1,8 @@
 ---
 name: RTC Kubernetes Lint - Comment
 description: >-
-  Post rtc-k8s-lint validation reports as PR comments from a trusted
-  workflow_run job, without checking out or running any PR code.
+  Post rtc-k8s-lint validation reports as PR comments from a trusted job that
+  never checks out or runs any PR code.
 author: NYU RTS
 
 inputs:
@@ -18,7 +18,9 @@ inputs:
   head-sha:
     description: >-
       Commit the lint run built. Comments are only posted on the PR whose
-      current head matches it.
+      current head matches it. Defaults to the head of the workflow_run that
+      triggered this job; pass github.event.pull_request.head.sha when running
+      in the same workflow as the lint job.
     required: false
     default: ${{ github.event.workflow_run.head_sha }}
 
@@ -34,7 +36,7 @@ runs:
         REPOSITORY: ${{ github.repository }}
         SCRIPTS: ${{ github.action_path }}/..
       run: |
-        : "${HEAD_SHA:?head-sha must be set; run this from a workflow_run job}"
+        : "${HEAD_SHA:?head-sha must be set; pass the commit that was linted}"
         python3 "$SCRIPTS/post_pr_comments.py" \
           --reports-dir "$REPORTS_DIR" \
           --repo "$REPOSITORY" \

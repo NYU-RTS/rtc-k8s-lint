@@ -51,8 +51,13 @@ fi
 # still writes a full JSON report to stdout) and when it fails to run at all
 # (stdout is empty in that case). Capture the exit code without letting
 # `set -e` kill the script so we can tell those two cases apart.
+flux_args="-s ecosystem -v -o json"
+if [ "${INPUT_SKIP_MISSING_SCHEMAS:-false}" = "true" ]; then
+  flux_args="$flux_args --skip-missing-schemas"
+fi
 validation_exit=0
-validation_json="$(printf '%s' "$manifest" | flux schema validate -s ecosystem -v -o json)" || validation_exit=$?
+# shellcheck disable=SC2086 # flux_args is a fixed, space-separated flag list
+validation_json="$(printf '%s' "$manifest" | flux schema validate $flux_args)" || validation_exit=$?
 
 if [ -z "$validation_json" ]; then
   echo "::error::flux schema validate produced no report (exit $validation_exit)"
