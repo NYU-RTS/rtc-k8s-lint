@@ -136,7 +136,7 @@ jobs:
     outputs:
       report-path: ${{ steps.lint.outputs.report-path }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - id: lint
@@ -147,7 +147,7 @@ jobs:
           # Only needed for private remote bases: a read-only contents token.
           github-token: ''
       - if: always() && steps.lint.outputs.report-path
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: rtc-k8s-lint-reports
           path: ${{ runner.temp }}/rtc-k8s-lint/
@@ -159,7 +159,7 @@ jobs:
     permissions:
       pull-requests: write # post the comment
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: rtc-k8s-lint-reports
           path: ${{ runner.temp }}/reports
