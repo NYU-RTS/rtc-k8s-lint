@@ -61,7 +61,7 @@ runs:
   steps:
     - name: lint
       id: lint
-      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.25.0
+      uses: docker://ghcr.io/nyu-rts/rtc-k8s-lint:v0.25.1
       env:
         INPUT_LOCATION: ${{ inputs.location }}
         INPUT_KUSTOMIZE: ${{ inputs.kustomize }}

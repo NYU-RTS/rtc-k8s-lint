@@ -8,7 +8,7 @@ validation failures. On other events it still emits its outputs and a step
 summary.
 
 ```yaml
-- uses: NYU-RTS/rtc-k8s-lint@2b1990e39fce12ce48bbee13ad5d6ad82a312c2a # v0.25.0
+- uses: NYU-RTS/rtc-k8s-lint@3a3832cd9ec07e807340b598b1a90c41a5ce7a0e # v0.25.1
   with:
     location: cicd/dev
 ```
@@ -140,7 +140,7 @@ jobs:
         with:
           persist-credentials: false
       - id: lint
-        uses: NYU-RTS/rtc-k8s-lint@2b1990e39fce12ce48bbee13ad5d6ad82a312c2a # v0.25.0
+        uses: NYU-RTS/rtc-k8s-lint@3a3832cd9ec07e807340b598b1a90c41a5ce7a0e # v0.25.1
         with:
           location: cicd/dev
           comment: false
@@ -163,7 +163,7 @@ jobs:
         with:
           name: rtc-k8s-lint-reports
           path: ${{ runner.temp }}/reports
-      - uses: NYU-RTS/rtc-k8s-lint/comment@2b1990e39fce12ce48bbee13ad5d6ad82a312c2a # v0.25.0
+      - uses: NYU-RTS/rtc-k8s-lint/comment@3a3832cd9ec07e807340b598b1a90c41a5ce7a0e # v0.25.1
         with:
           reports-dir: ${{ runner.temp }}/reports
           head-sha: ${{ github.event.pull_request.head.sha }}
