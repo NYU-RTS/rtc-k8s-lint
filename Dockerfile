@@ -7,7 +7,7 @@ FROM registry.access.redhat.com/hi/core-runtime:latest-builder AS build
 ARG TARGETARCH=amd64
 ARG KUSTOMIZE_VERSION=5.8.3
 ARG GH_VERSION=2.103.3
-ARG FLUX_VERSION=2.10.0
+ARG FLUX_VERSION=2.10.1
 
 USER 0
 
